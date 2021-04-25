@@ -22,39 +22,65 @@ public class UserController {
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUser() {
-        return new ResponseEntity<>(userList.getAllUser(), HttpStatus.OK);
+        List<User> userList = this.userList.getAllUser();
+        if(userList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<User> getUser(@PathVariable("id") String id) {
-        return new ResponseEntity<>(userList.getUser(id), HttpStatus.OK);
+        if(id == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = userList.getUser(id);
+        if(user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("/users")
     public ResponseEntity<List<User>> addUser(@RequestBody User user) {
+        if(user == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userList.addUser(user);
         return new ResponseEntity<>(userList.getAllUser(), HttpStatus.CREATED);
     }
 
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody User user) {
+        if(id == null || user == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userList.updateUser(id, user);
         return new ResponseEntity<>(userList.getUser(id), HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<User> deleteUser(@PathVariable("id") String id) {
+        if(id == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         userList.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/users/entries/{id}")
     public ResponseEntity<List<Entry>> getAllEntryOfUser(@PathVariable("id") String id) {
+        if(id == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(userList.getAllEntryOfUser(id), HttpStatus.OK);
     }
 
     @GetMapping("/users/{name}")
-    public ResponseEntity<List<User>> getUserByName(@PathVariable("name") String phone) {
-        return new ResponseEntity<>(userList.getUserByName(phone), HttpStatus.OK);
+    public ResponseEntity<List<User>> getUserByName(@PathVariable("name") String name) {
+        if(name == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(userList.getUserByName(name), HttpStatus.OK);
     }
 }
