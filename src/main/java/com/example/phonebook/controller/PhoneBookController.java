@@ -2,6 +2,8 @@ package com.example.phonebook.controller;
 
 import com.example.phonebook.domain.UserService;
 import com.example.phonebook.domain.Entry;
+import com.example.phonebook.exceptions.ApiRequestException;
+import com.example.phonebook.exceptions.NotFoundRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ public class PhoneBookController {
     @GetMapping("/entries/{phone}")
     public ResponseEntity<Entry> getEntryByPhone(@PathVariable("phone") String phone) {
         if (phone == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("User phone is null") ;
         }
         return new ResponseEntity<>(userList.getEntryByPhone(phone), HttpStatus.OK);
     }
@@ -25,7 +27,7 @@ public class PhoneBookController {
     @PostMapping("/entries/users/{id}")
     public ResponseEntity<List<Entry>> updateEntry(@PathVariable("id") String id, @RequestBody Entry entry) {
         if (id == null || entry == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("User id or entry is null") ;
         }
         userList.addEntry(id, entry);
         return new ResponseEntity<>(userList.getUser(id).getPhoneBookList(), HttpStatus.CREATED);
@@ -35,11 +37,11 @@ public class PhoneBookController {
     public ResponseEntity<Entry> getEntry(@PathVariable("userId") String userId,
                                           @PathVariable("entryId") String entryId) {
         if (userId == null || entryId == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("User id or entry id is null") ;
         }
         Entry entry = userList.getEntryById(userId, entryId);
         if (entry == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new NotFoundRequestException("Entry is null");
         }
         return new ResponseEntity<>(entry, HttpStatus.OK);
     }
@@ -48,7 +50,7 @@ public class PhoneBookController {
     public ResponseEntity<Entry> deleteEntry(@PathVariable("userId") String userId,
                                              @PathVariable("entryId") String entryId) {
         if (userId == null || entryId == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("User id or entry id is null") ;
         }
         userList.deleteEntryById(userId, entryId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -59,7 +61,7 @@ public class PhoneBookController {
                                                   @PathVariable("entryId") String entryId,
                                                   @RequestBody Entry entry) {
         if (userId == null || entryId == null || entry == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ApiRequestException("User id  or entry id or entry is null") ;
         }
         userList.updateEntry(userId, entryId, entry);
         return new ResponseEntity<>(userList.getAllEntryOfUser(userId), HttpStatus.OK);
