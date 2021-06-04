@@ -22,6 +22,7 @@ public class PhoneBookController {
         if (phone == null) {
             throw new ApiRequestException("User phone is null") ;
         }
+         logger.info("Get entry by phone");
         return new ResponseEntity<>(userList.getEntryByPhone(phone), HttpStatus.OK);
     }
 
