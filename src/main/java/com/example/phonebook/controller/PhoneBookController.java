@@ -10,12 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 public class PhoneBookController {
     @Autowired
     private UserService userList;
-
+    private static Logger logger = Logger.getLogger(PhoneBookController.class.getName());
     @GetMapping("/entries/{phone}")
     public ResponseEntity<Entry> getEntryByPhone(@PathVariable("phone") String phone) {
         if (phone == null) {
